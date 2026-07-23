@@ -10,8 +10,9 @@ import SwiftUI
 @main
 struct BaliseApp: App {
     var body: some Scene {
-        WindowGroup {
+        MenuBarExtra("Balise", systemImage: "globe") {
             ContentView()
         }
+        .menuBarExtraStyle(.window)
     }
 }
