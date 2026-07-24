@@ -34,6 +34,21 @@ nonisolated struct RunningProcess: Identifiable, Hashable, Sendable {
     /// When the process started. `nil` when unreadable.
     let startedAt: Date?
 
+    /// The folder the process was launched from. For a dev server this is
+    /// usually the project folder, which is often the only way to tell two
+    /// `node` processes apart.
+    let workingDirectory: String?
+
+    /// The full command line, the binary first.
+    ///
+    /// `nil` means we do not have it — either macOS refused, or nobody has
+    /// asked for it yet. It comes from a separate, slower call than the rest
+    /// of this struct, so it is filled in only for rows the user opens.
+    let arguments: [String]?
+
+    /// Where the binary came from, worked out from its path alone.
+    var source: SoftwareSource { SoftwareSource(executablePath: executablePath) }
+
     var id: pid_t { pid }
 }
 

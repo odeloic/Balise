@@ -40,6 +40,7 @@ Balise/
     Origin/          read code signatures (Security framework)
     Control/         send signals — the only place that can stop things
     Docker/          find the engine, talk to its API
+    Fakes/           stand-in services, all of them, in one place
   Features/
     Processes/       store + view
     Docker/          store + view
@@ -62,11 +63,16 @@ destructive, happens once, and needs a confirmation. They live in separate
 files (`Services/Process/` vs `Services/Control/`) so the polling loop cannot
 reach the stop code by accident.
 
-**3. One clock, not one per feature.**
+**3. Scan when the menu opens. Nothing while it is shut.**
 
-A single ticker in the app environment drives every refresh, and stops when the
-popover closes. The menu bar is shut most of the time; Balise should cost
-nothing while it is.
+A full sweep is cheap — measured at 1.5 to 2.5 ms for 720 processes — but the
+icon draws no live data, so a scan while the popover is closed produces
+something nobody can see. Balise starts at login to be *resident*, not busy.
+macOS agrees: App Nap throttles timers in hidden apps anyway.
+
+This changes only if the icon ever carries a badge, like an open-port count.
+That would force a background clock, and it is the line between an idle app and
+an always-on one.
 
 **4. Docker's address is discovered, never hardcoded.**
 
@@ -103,6 +109,28 @@ Docker's API is HTTP over a file socket. Apple's HTTP client will not do that.
 Use `NWConnection` with `NWEndpoint.unix(path:)` and write the request by hand.
 Keep that plumbing in its own file, apart from anything that knows what a
 container is.
+
+## What a row is
+
+One row per listening port, split by address family. Postgres listening over
+both IPv4 and IPv6 is two rows, because that is what the machine reports and
+merging them hides a real fact. `ListeningPort.id` carries the family for
+exactly this reason.
+
+The row shows port, process name, source, address family and — when it is not
+yours — the owner. Opening a row adds process id, path, working folder,
+command line and start time.
+
+**Source is read off the path, not the signature.** `/opt/homebrew/…` is
+Homebrew, `/Applications/Foo.app/…` is Foo, `/System/…` is macOS. Free, and it
+is the thing you want to know day to day. The verified answer, `CodeOrigin`,
+costs a disk read plus a signature check per process, so it belongs on a row
+the user has opened, never on the list.
+
+**Working folder is how you tell two `node` processes apart.** Measured: it
+comes back as the project folder. On its own it can mislead — an editor's
+helper inherits the folder of the project it was launched from — so it is shown
+next to the command line, not instead of it.
 
 ## Build settings
 
