@@ -10,14 +10,9 @@ import SwiftUI
 @main
 struct BaliseApp: App {
 
-    /// Both services share one fake machine, so stopping a process in the list
-    /// really does remove it. Swapping in `LibprocProcessInspector` later
-    /// changes these two lines and nothing else.
-    private static let world = FakeProcessWorld()
-
     @State private var processes = ProcessListStore(
-        inspector: PreviewProcessInspector(world: BaliseApp.world),
-        controller: PreviewProcessController(world: BaliseApp.world)
+        inspector: LibprocProcessInspector(),
+        controller: SignalProcessController()
     )
 
     var body: some Scene {
