@@ -9,9 +9,15 @@ import SwiftUI
 
 @main
 struct BaliseApp: App {
+
+    @State private var processes = ProcessListStore(
+        inspector: LibprocProcessInspector(),
+        controller: SignalProcessController()
+    )
+
     var body: some Scene {
-        MenuBarExtra("Balise", systemImage: "globe") {
-            ContentView()
+        MenuBarExtra("Balise", systemImage: "dot.radiowaves.left.and.right") {
+            ProcessListView(store: processes)
         }
         .menuBarExtraStyle(.window)
     }
