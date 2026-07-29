@@ -54,7 +54,7 @@ On disk today: `Core/`, `Services/Process/`, `Services/Control/`,
 ## Rules
 
 Each rule carries a note saying whether it is honoured by code today or is
-still only a decision. Anything marked *not yet committed* is on `feat/libroc`.
+still only a decision, and which commit did it.
 
 **1. Every service is a protocol first.**
 
@@ -68,7 +68,7 @@ only way to test states like "Docker is not installed".
 **2. Reads and writes are different services.**
 
 *Built. Both protocols in d6ddbfe; `LibprocProcessInspector` and
-`SignalProcessController` behind them, not yet committed.*
+`SignalProcessController` behind them in 496a9d7.*
 
 Listing processes is safe and repeats every few seconds. Stopping one is
 destructive, happens once, and needs a confirmation. They live in separate
@@ -132,8 +132,8 @@ container is.
 
 **6. A service that touches the system is an actor, not a struct.**
 
-*Built, not yet committed. Learned while writing the two real services, so it
-is younger than rules 1 to 5.*
+*Built in 496a9d7. Learned while writing the two real services, so it is
+younger than rules 1 to 5.*
 
 `SWIFT_APPROACHABLE_CONCURRENCY` is on, and it brings
 `NonisolatedNonsendingByDefault` with it. Under that rule a `nonisolated async`
@@ -176,7 +176,7 @@ next to the command line, not instead of it.
 
 ## What libproc will and will not tell you
 
-*Built, not yet committed. `Services/Process/Libproc.swift` holds the calls,
+*Built in 496a9d7. `Services/Process/Libproc.swift` holds the calls,
 `LibprocProcessInspector.swift` the sweep.*
 
 Measured on this Mac: 791 processes, 35 listening ports held by 17 of them, 248
@@ -206,8 +206,9 @@ which is why the scan can afford it up front rather than on demand.
 
 ## Tests
 
-*Built, not yet committed. 75 tests, green five runs in a row. Nothing covers
-Docker or `CodeOrigin`, because neither exists.*
+*Built. The target and the core tests in fd55eb5, the service tests in 496a9d7.
+75 tests, green five runs in a row. Nothing covers Docker or `CodeOrigin`,
+because neither exists.*
 
 `BaliseTests` is a unit test target hosted in `Balise.app`. Hosting is what
 makes `@testable import Balise` work, and it means the tests run inside the
